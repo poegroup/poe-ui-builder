@@ -1,0 +1,15 @@
+{
+  "name": "directiv-core-builder",
+  "version": "0.1.0",
+  "description": "builder for directiv",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cameron Bytheway <bytheway.cameron@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "envs": "^0.1.6",
+    "webpack": "^1.4.0-beta6"
+  }
+}
