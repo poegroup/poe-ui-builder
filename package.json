@@ -1,6 +1,6 @@
 {
   "name": "poe-ui-builder",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Assets builder for poe-ui ",
   "main": "lib/index.js",
   "scripts": {
