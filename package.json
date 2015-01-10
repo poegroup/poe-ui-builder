@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "envs": "^0.1.6",
-    "webpack": "^1.4.0-beta6"
+    "extract-text-webpack-plugin": "^0.3.6",
+    "webpack": "^1.4.15"
   }
 }
