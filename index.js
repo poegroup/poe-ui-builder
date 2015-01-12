@@ -9,6 +9,7 @@ var list = require('fs').readdirSync;
 var join = require('path').join;
 var byExtension = require('./lib/loaders-by-extension');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var ResolveSelf = require('./lib/resolve-self');
 
 var DISABLE_MIN = !!envs('DISABLE_MIN');
 var NODE_ENV = envs('ASSET_ENV', envs('NODE_ENV', 'production'));
@@ -62,7 +63,10 @@ module.exports = function(dirname) {
       'process.env': {
         NODE_ENV: JSON.stringify(NODE_ENV)
       }
-    })
+    }),
+    new webpack.ResolverPlugin([
+      new ResolveSelf()
+    ], ['normal'])
   ];
 
   if (!DEVELOPMENT) {
