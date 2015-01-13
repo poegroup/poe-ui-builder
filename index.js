@@ -92,7 +92,8 @@ module.exports = function(dirname) {
    */
 
   config.resolve = {
-    extensions: ['', '.js', '.html']
+    extensions: ['', '.js', '.html'],
+    modulesDirectories: ['web_modules', 'node_modules', 'src/modules']
   };
 
   /**
