@@ -24,12 +24,20 @@ module.exports = function(dirname) {
    * Configure the entries
    */
 
+  var target = config.target = envs('BUILD_TARGET', 'web');
+
   // Autoload all of the modules
   config.entry = DEVELOPMENT ? {
     app: dirname + '/index.js'
   } : {
     main: dirname + '/index.js'
   };
+
+  if (target === 'node') {
+    config.entry = {
+      server: dirname + '/server'
+    };
+  }
 
   config.output = {
     path: dirname,
@@ -43,14 +51,16 @@ module.exports = function(dirname) {
     config.output.pathinfo = true;
     config.output.publicPath = '/build/';
 
-    // use the eval builder for optimal speed in development
-    config.devtool = 'eval';
+    if (config.target === 'web') {
+      // use the eval builder for optimal speed in development
+      config.devtool = 'eval';
 
-    var entries = [config.entry.app];
-    // append the hot reload entries
-    entries.push('webpack-dev-server/client?http://localhost:' + envs('PORT', '3000'));
-    entries.push('webpack/hot/dev-server');
-    config.entry = entries;
+      var entries = [config.entry.app];
+      // append the hot reload entries
+      entries.push('webpack-dev-server/client?http://localhost:' + envs('PORT', '3000'));
+      entries.push('webpack/hot/dev-server');
+      config.entry = entries;
+    }
   }
 
   /**
@@ -69,22 +79,25 @@ module.exports = function(dirname) {
     ], ['normal'])
   ];
 
+  if (target === 'node' || !DEVELOPMENT) {
+    config.plugins.push(new ExtractTextPlugin('[name].css?[chunkhash]'));
+  }
+
   if (!DEVELOPMENT) {
     config.plugins.push(
-      new webpack.optimize.AggressiveMergingPlugin(),
-      new ExtractTextPlugin('[name].css?[chunkhash]')
+      new webpack.optimize.AggressiveMergingPlugin()
     );
 
     if (!envs('DISABLE_MIN')) config.plugins.push(
       new webpack.optimize.OccurrenceOrderPlugin(),
-      new webpack.optimize.UglifyJsPlugin({output: {comments: false}}),
-      new webpack.optimize.DedupePlugin()
+      new webpack.optimize.UglifyJsPlugin({output: {comments: false}})
+      // new webpack.optimize.DedupePlugin()
     );
 
     if (MANIFEST) config.plugins.push(createManifest(MANIFEST));
   } else {
     // append the hot reload plugin
-    config.plugins.push(new webpack.HotModuleReplacementPlugin());
+    if (config.target === 'web') config.plugins.push(new webpack.HotModuleReplacementPlugin());
   }
 
   /**
@@ -92,7 +105,7 @@ module.exports = function(dirname) {
    */
 
   config.resolve = {
-    extensions: ['', '.js', '.html'],
+    extensions: ['', '.js', '.json', '.html'],
     modulesDirectories: ['web_modules', 'node_modules', 'src/modules']
   };
 
@@ -110,6 +123,8 @@ module.exports = function(dirname) {
     config.module.loaders.push.apply(config.module.loaders, byExtension(obj));
   };
 
+  config.addLoader('json', 'json-loader');
+
   /**
    * Setup style loading
    */
@@ -118,7 +133,7 @@ module.exports = function(dirname) {
   extract('styl', 'css-loader!stylus-loader?paths=node_modules');
 
   function extract(ext, loader) {
-    config.addLoader(ext, DEVELOPMENT ? 'style-loader!' + loader : ExtractTextPlugin.extract('style-loader', loader));
+    config.addLoader(ext, DEVELOPMENT && target !== 'node' ? 'style-loader!' + loader : ExtractTextPlugin.extract('style-loader', loader));
   }
 
   /**
