@@ -118,6 +118,7 @@ module.exports = function(dirname) {
   };
 
   config.addLoader = function(ext, loader) {
+    if (ext instanceof RegExp) return config.module.loaders.push({test: ext, loader: loader, loaders: loader});
     var obj = {};
     obj[ext] = loader;
     config.module.loaders.push.apply(config.module.loaders, byExtension(obj));
@@ -129,12 +130,12 @@ module.exports = function(dirname) {
    * Setup style loading
    */
 
-  extract('css', 'css-loader');
-  extract('styl', 'css-loader!stylus-loader?paths=node_modules');
+  config.addStyle = function(ext, loader) {
+    config.addLoader(ext, DEVELOPMENT && target !== 'node' ? 'style-loader!' + loader : ExtractTextPlugin.extract(loader));
+  };
 
-  function extract(ext, loader) {
-    config.addLoader(ext, DEVELOPMENT && target !== 'node' ? 'style-loader!' + loader : ExtractTextPlugin.extract('style-loader', loader));
-  }
+  config.addStyle('css', 'css-loader');
+  config.addStyle('styl', 'css-loader!stylus-loader?paths=node_modules');
 
   /**
    * Configure development stuff
