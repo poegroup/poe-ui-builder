@@ -90,8 +90,8 @@ module.exports = function(dirname) {
 
     if (!envs('DISABLE_MIN')) config.plugins.push(
       new webpack.optimize.OccurrenceOrderPlugin(),
-      new webpack.optimize.UglifyJsPlugin({output: {comments: false}})
-      // new webpack.optimize.DedupePlugin()
+      new webpack.optimize.UglifyJsPlugin({output: {comments: false}}),
+      new webpack.optimize.DedupePlugin()
     );
 
     if (MANIFEST) config.plugins.push(createManifest(MANIFEST));
@@ -151,8 +151,23 @@ module.exports = function(dirname) {
 function createManifest(manifest) {
   return function() {
     this.plugin('done', function(stats) {
-      var out = JSON.stringify(stats.toJson().assetsByChunkName, null, '  ');
-      write(manifest, out);
+      var json = stats.toJson()
+      var byChunkName = json.assetsByChunkName;
+      var out = json.assets.reduce(function(acc, asset) {
+        if (!asset.chunkNames.length) {
+          acc.chunks.push(asset.name);
+          return acc;
+        }
+        if (~asset.name.indexOf('.css')) acc.styles.push(asset.name);
+        if (~asset.name.indexOf('.js')) acc.scripts.push(asset.name);
+        return acc;
+      }, {
+        styles: [],
+        scripts: [],
+        chunks: []
+      });
+
+      write(manifest, JSON.stringify(out, null, '  '));
     });
   };
 }
