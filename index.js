@@ -85,7 +85,9 @@ module.exports = function(dirname) {
 
   if (!DEVELOPMENT) {
     config.plugins.push(
-      new webpack.optimize.AggressiveMergingPlugin()
+      new webpack.optimize.AggressiveMergingPlugin({
+        moveToParents: true
+      })
     );
 
     if (!envs('DISABLE_MIN')) config.plugins.push(
