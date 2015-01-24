@@ -1,6 +1,6 @@
 {
   "name": "directiv-core-builder",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "builder for directiv",
   "main": "index.js",
   "scripts": {
