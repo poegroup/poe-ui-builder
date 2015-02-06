@@ -80,7 +80,7 @@ module.exports = function(dirname) {
   ];
 
   if (target === 'node' || !DEVELOPMENT) {
-    config.plugins.push(new ExtractTextPlugin('[name].css?[chunkhash]'));
+    config.plugins.push(new ExtractTextPlugin('[name]' + (DISABLE_MIN ? '' : '.min') + '.css?[chunkhash]'));
   }
 
   if (!DEVELOPMENT) {
@@ -156,7 +156,7 @@ function createManifest(manifest) {
       var byChunkName = json.assetsByChunkName;
       var out = json.assets.reduce(function(acc, asset) {
         if (!asset.chunkNames.length) {
-          acc.chunks.push(asset.name);
+          if (~asset.name.indexOf('.js')) acc.chunks.push(asset.name);
           return acc;
         }
         if (~asset.name.indexOf('.css')) acc.styles.push(asset.name);
