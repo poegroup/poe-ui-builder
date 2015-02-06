@@ -92,8 +92,7 @@ module.exports = function(dirname) {
 
     if (!envs('DISABLE_MIN')) config.plugins.push(
       new webpack.optimize.OccurrenceOrderPlugin(),
-      new webpack.optimize.UglifyJsPlugin({output: {comments: false}}),
-      new webpack.optimize.DedupePlugin()
+      new webpack.optimize.UglifyJsPlugin({output: {comments: false}})
     );
 
     if (MANIFEST) config.plugins.push(createManifest(MANIFEST));
