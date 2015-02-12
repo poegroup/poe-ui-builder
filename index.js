@@ -70,9 +70,7 @@ module.exports = function(dirname) {
   config.plugins = [
     new webpack.IgnorePlugin(/vertx/),
     new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify(NODE_ENV)
-      }
+      'process.env': env()
     }),
     new webpack.ResolverPlugin([
       new ResolveSelf()
@@ -122,7 +120,7 @@ module.exports = function(dirname) {
     if (ext instanceof RegExp) return config.module.loaders.push({test: ext, loader: loader, loaders: loader});
     var obj = {};
     obj[ext] = loader;
-    config.module.loaders.push.apply(config.module.loaders, byExtension(obj));
+    return config.module.loaders.push.apply(config.module.loaders, byExtension(obj));
   };
 
   config.addLoader('json', 'json-loader');
@@ -149,10 +147,18 @@ module.exports = function(dirname) {
   return config;
 };
 
+function env() {
+  return Object.keys(process.env).reduce(function(acc, key) {
+    if (key !== key.toUpperCase()) return acc;
+    acc[key] = JSON.stringify(process.env[key]);
+    return acc;
+  }, {});
+}
+
 function createManifest(manifest) {
   return function() {
     this.plugin('done', function(stats) {
-      var json = stats.toJson()
+      var json = stats.toJson();
       var byChunkName = json.assetsByChunkName;
       var out = json.assets.reduce(function(acc, asset) {
         if (!asset.chunkNames.length) {
