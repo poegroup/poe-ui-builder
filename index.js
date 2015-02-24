@@ -69,9 +69,7 @@ module.exports = function(dirname) {
 
   config.plugins = [
     new webpack.IgnorePlugin(/vertx/),
-    new webpack.DefinePlugin({
-      'process.env': env()
-    }),
+    new webpack.DefinePlugin(env()),
     new webpack.ResolverPlugin([
       new ResolveSelf()
     ], ['normal'])
@@ -150,7 +148,7 @@ module.exports = function(dirname) {
 function env() {
   return Object.keys(process.env).reduce(function(acc, key) {
     if (key !== key.toUpperCase()) return acc;
-    acc[key] = JSON.stringify(process.env[key]);
+    acc['process.env.' + key] = JSON.stringify(process.env[key]);
     return acc;
   }, {});
 }
