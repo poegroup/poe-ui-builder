@@ -69,7 +69,9 @@ module.exports = function(dirname) {
 
   config.plugins = [
     new webpack.IgnorePlugin(/vertx/),
-    new webpack.DefinePlugin(env()),
+    new webpack.DefinePlugin({
+      'process.env': env()
+    }),
     new webpack.ResolverPlugin([
       new ResolveSelf()
     ], ['normal'])
@@ -146,11 +148,14 @@ module.exports = function(dirname) {
 };
 
 function env() {
-  return Object.keys(process.env).reduce(function(acc, key) {
+  var e = Object.keys(process.env).reduce(function(acc, key) {
     if (key !== key.toUpperCase()) return acc;
-    acc['process.env.' + key] = JSON.stringify(process.env[key]);
+    acc[key] = JSON.stringify(process.env[key]);
     return acc;
   }, {});
+  if (!e.NODE_ENV) e.NODE_ENV = JSON.stringify(NODE_ENV);
+  if (!e.NODE_DEBUG) e.NODE_DEBUG = '""';
+  return e;
 }
 
 function createManifest(manifest) {
