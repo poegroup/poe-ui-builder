@@ -18,7 +18,9 @@ var HASH = typeof envs('DISABLE_HASH') === 'undefined';
 var MANIFEST = envs('MANIFEST');
 
 module.exports = function(dirname) {
-  var config = {};
+  var config = {
+    sourcedir: dirname
+  };
 
   /**
    * Configure the entries
