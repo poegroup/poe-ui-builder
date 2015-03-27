@@ -72,7 +72,8 @@ module.exports = function(dirname) {
   config.plugins = [
     new webpack.IgnorePlugin(/vertx/),
     new webpack.DefinePlugin({
-      'process.env': env()
+      'process.env': env(),
+      'browser.env': '(__env__ || {})'
     }),
     new webpack.ResolverPlugin([
       new ResolveSelf()
