@@ -7,6 +7,8 @@ var webpack = require('webpack');
 var write = require('fs').writeFileSync;
 var list = require('fs').readdirSync;
 var join = require('path').join;
+var resolve = require('path').resolve;
+var glob = require('glob');
 var byExtension = require('./lib/loaders-by-extension');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var ResolveSelf = require('./lib/resolve-self');
@@ -96,7 +98,7 @@ module.exports = function(dirname) {
 
     if (!envs('DISABLE_MIN')) config.plugins.push(
       new webpack.optimize.OccurrenceOrderPlugin(),
-      new webpack.optimize.UglifyJsPlugin({output: {comments: false}})
+      new webpack.optimize.UglifyJsPlugin({output: {comments: false}, sourceMap: false})
     );
 
     if (MANIFEST) config.plugins.push(createManifest(MANIFEST));
@@ -149,12 +151,23 @@ module.exports = function(dirname) {
   var watchIgnores = [];
 
   config.load = function() {
-    config.plugins.push(new WatchIgnorePlugin(watchIgnores));
+    if (watchIgnores.length) config.plugins.push(new WatchIgnorePlugin(watchIgnores));
     return webpack(config);
   };
 
   config.watchIgnore = function() {
     watchIgnores.push.apply(watchIgnores, arguments);
+  };
+
+  config.prefetchWildcard = function(pattern, opts, ignore) {
+    glob.sync(pattern, opts).forEach(function(file) {
+      if (ignore && file.match(ignore)) return;
+      config.prefetchModule(resolve(process.cwd(), file));
+    });
+  };
+
+  config.prefetchModule = function(context, request) {
+    config.plugins.push(new webpack.PrefetchPlugin(context, request));
   };
 
   return config;
