@@ -143,8 +143,15 @@ module.exports = function(dirname) {
    * Configure development stuff
    */
 
+  var watchIgnores = [];
+
   config.load = function() {
+    config.plugins.push(new webpack.WatchIgnorePlugin(watchIgnores));
     return webpack(config);
+  };
+
+  config.watchIgnore = function() {
+    watchIgnores.push.apply(watchIgnores, arguments);
   };
 
   return config;
