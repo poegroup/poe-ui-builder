@@ -10,6 +10,9 @@ var join = require('path').join;
 var byExtension = require('./lib/loaders-by-extension');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var ResolveSelf = require('./lib/resolve-self');
+// remove this once webpack releases it
+// WatchIgnorePlugin = webpack.WatchIgnorePlugin
+var WatchIgnorePlugin = require('./lib/watch-ignore');
 
 var DISABLE_MIN = !!envs('DISABLE_MIN');
 var NODE_ENV = envs('ASSET_ENV', envs('NODE_ENV', 'production'));
@@ -146,7 +149,7 @@ module.exports = function(dirname) {
   var watchIgnores = [];
 
   config.load = function() {
-    config.plugins.push(new webpack.WatchIgnorePlugin(watchIgnores));
+    config.plugins.push(new WatchIgnorePlugin(watchIgnores));
     return webpack(config);
   };
 
