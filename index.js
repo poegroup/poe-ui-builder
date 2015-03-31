@@ -21,6 +21,8 @@ var NODE_ENV = envs('ASSET_ENV', envs('NODE_ENV', 'production'));
 var DEVELOPMENT = NODE_ENV === 'development';
 var HASH = typeof envs('DISABLE_HASH') === 'undefined';
 var MANIFEST = envs('MANIFEST');
+var BUILD_TARGET = envs('BUILD_TARGET', 'web')
+var EXTRACT_STYLE = envs('EXTRACT_STYLE', BUILD_TARGET === 'node' || !DEVELOPMENT) !== '0';
 
 module.exports = function(dirname) {
   var config = {
@@ -31,7 +33,7 @@ module.exports = function(dirname) {
    * Configure the entries
    */
 
-  var target = config.target = envs('BUILD_TARGET', 'web');
+  var target = config.target = BUILD_TARGET;
 
   // Autoload all of the modules
   config.entry = DEVELOPMENT ? {
@@ -85,7 +87,7 @@ module.exports = function(dirname) {
     ], ['normal'])
   ];
 
-  if (target === 'node' || !DEVELOPMENT) {
+  if (EXTRACT_STYLE) {
     config.plugins.push(new ExtractTextPlugin('[name]' + (DISABLE_MIN ? '' : '.min') + '.css?[chunkhash]'));
   }
 
@@ -138,7 +140,7 @@ module.exports = function(dirname) {
    */
 
   config.addStyle = function(ext, loader) {
-    config.addLoader(ext, DEVELOPMENT && target !== 'node' ? 'style-loader!' + loader : ExtractTextPlugin.extract(loader));
+    config.addLoader(ext, !EXTRACT_STYLE ? 'style-loader!' + loader : ExtractTextPlugin.extract(loader));
   };
 
   config.addStyle('css', 'css-loader');
