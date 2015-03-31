@@ -21,8 +21,8 @@ var NODE_ENV = envs('ASSET_ENV', envs('NODE_ENV', 'production'));
 var DEVELOPMENT = NODE_ENV === 'development';
 var HASH = typeof envs('DISABLE_HASH') === 'undefined';
 var MANIFEST = envs('MANIFEST');
-var BUILD_TARGET = envs('BUILD_TARGET', 'web')
-var EXTRACT_STYLE = envs('EXTRACT_STYLE', BUILD_TARGET === 'node' || !DEVELOPMENT) !== '0';
+var BUILD_TARGET = envs('BUILD_TARGET', 'web');
+var EXTRACT_STYLE = !DEVELOPMENT && envs('EXTRACT_STYLE', BUILD_TARGET === 'node') !== '0';
 
 module.exports = function(dirname) {
   var config = {
