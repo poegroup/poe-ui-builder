@@ -15,6 +15,7 @@ var ResolveSelf = require('./lib/resolve-self');
 // remove this once webpack releases it
 // WatchIgnorePlugin = webpack.WatchIgnorePlugin
 var WatchIgnorePlugin = require('./lib/watch-ignore');
+var EnvifyPlugin = require('./lib/envify-plugin');
 
 var DISABLE_MIN = !!envs('DISABLE_MIN');
 var NODE_ENV = envs('ASSET_ENV', envs('NODE_ENV', 'production'));
@@ -78,9 +79,9 @@ module.exports = function(dirname) {
 
   config.plugins = [
     new webpack.IgnorePlugin(/vertx/),
+    new EnvifyPlugin(),
     new webpack.DefinePlugin({
-      'process.env': env(),
-      'browser.env': '(__env__ || {})'
+      'browser.env': '__env__'
     }),
     new webpack.ResolverPlugin([
       new ResolveSelf()
@@ -174,17 +175,6 @@ module.exports = function(dirname) {
 
   return config;
 };
-
-function env() {
-  var e = Object.keys(process.env).reduce(function(acc, key) {
-    if (key !== key.toUpperCase()) return acc;
-    acc[key] = JSON.stringify(process.env[key]);
-    return acc;
-  }, {});
-  if (!e.NODE_ENV) e.NODE_ENV = JSON.stringify(NODE_ENV);
-  if (!e.NODE_DEBUG) e.NODE_DEBUG = '""';
-  return e;
-}
 
 function createManifest(manifest) {
   return function() {
