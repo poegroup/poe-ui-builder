@@ -3,7 +3,6 @@
  */
 
 var envs = require('envs');
-var webpack = require('webpack');
 var write = require('fs').writeFileSync;
 var list = require('fs').readdirSync;
 var join = require('path').join;
@@ -25,7 +24,7 @@ var MANIFEST = envs('MANIFEST');
 var BUILD_TARGET = envs('BUILD_TARGET', 'web');
 var EXTRACT_STYLE = !DEVELOPMENT && envs('EXTRACT_STYLE', BUILD_TARGET === 'node') !== '0';
 
-module.exports = function(dirname) {
+module.exports = function(dirname, webpack) {
   var config = {
     sourcedir: dirname
   };
@@ -79,7 +78,7 @@ module.exports = function(dirname) {
 
   config.plugins = [
     new webpack.IgnorePlugin(/vertx/),
-    new EnvifyPlugin(),
+    new EnvifyPlugin(null, webpack),
     new webpack.DefinePlugin({
       'browser.env': '__env__'
     }),
@@ -115,7 +114,7 @@ module.exports = function(dirname) {
    */
 
   config.resolve = {
-    extensions: ['', '.js', '.json', '.html'],
+    extensions: ['', '.js'],
     modulesDirectories: ['web_modules', 'node_modules', 'src/modules']
   };
 
@@ -134,18 +133,14 @@ module.exports = function(dirname) {
     return config.module.loaders.push.apply(config.module.loaders, byExtension(obj));
   };
 
-  config.addLoader('json', 'json-loader');
-
   /**
    * Setup style loading
    */
 
-  config.addStyle = function(ext, loader) {
-    config.addLoader(ext, !EXTRACT_STYLE ? 'style-loader!' + loader : ExtractTextPlugin.extract(loader));
+  config.addStyle = function(ext, loader, styleLoader) {
+    styleLoader = styleLoader || 'style-loader';
+    config.addLoader(ext, !EXTRACT_STYLE ? styleLoader + '!' + loader : ExtractTextPlugin.extract(loader));
   };
-
-  config.addStyle('css', 'css-loader');
-  config.addStyle('styl', 'css-loader!stylus-loader?paths=node_modules');
 
   /**
    * Configure development stuff
