@@ -1,4 +1,4 @@
-core-builder
+poe-ui-builder
 ============
 
-core webpack builder
+builder for poe-ui
