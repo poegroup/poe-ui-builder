@@ -115,7 +115,12 @@ module.exports = function(dirname, webpack) {
 
   config.resolve = {
     extensions: ['', '.js'],
-    modulesDirectories: ['web_modules', 'node_modules', 'src/modules']
+    modulesDirectories: ['web_modules', 'node_modules', 'src/modules'],
+    fallback: [process.cwd(), process.cwd() + '/node_modules']
+  };
+
+  config.resolveLoader = {
+    fallback: [process.cwd(), process.cwd() + '/node_modules']
   };
 
   /**
