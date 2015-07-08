@@ -87,8 +87,10 @@ module.exports = function(dirname, webpack) {
     ], ['normal'])
   ];
 
+  var extractPlugin = new ExtractTextPlugin('style', '[name]' + (DISABLE_MIN ? '' : '.min') + '.css?[chunkhash]');
+
   if (EXTRACT_STYLE) {
-    config.plugins.push(new ExtractTextPlugin('[name]' + (DISABLE_MIN ? '' : '.min') + '.css?[chunkhash]'));
+    config.plugins.push(extractPlugin);
   }
 
   if (!DEVELOPMENT) {
@@ -144,7 +146,7 @@ module.exports = function(dirname, webpack) {
 
   config.addStyle = function(ext, loader, styleLoader) {
     styleLoader = styleLoader || 'style-loader';
-    config.addLoader(ext, !EXTRACT_STYLE ? styleLoader + '!' + loader : ExtractTextPlugin.extract(loader));
+    config.addLoader(ext, !EXTRACT_STYLE ? styleLoader + '!' + loader : extractPlugin.extract(loader));
   };
 
   /**
