@@ -7,6 +7,7 @@ var write = require('fs').writeFileSync;
 var list = require('fs').readdirSync;
 var join = require('path').join;
 var resolve = require('path').resolve;
+var Path = require('path');
 var glob = require('glob');
 var byExtension = require('./lib/loaders-by-extension');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -23,10 +24,13 @@ var HASH = typeof envs('DISABLE_HASH') === 'undefined';
 var MANIFEST = envs('MANIFEST');
 var BUILD_TARGET = envs('BUILD_TARGET', 'web');
 var EXTRACT_STYLE = !DEVELOPMENT && envs('EXTRACT_STYLE', BUILD_TARGET === 'node') !== '0';
+var OUTPUT_PATTERN = envs('OUTPUT_PATTERN', '[name]');
+var MAIN_ENTRY = DEVELOPMENT ? 'app' : envs('MAIN_ENTRY', 'main');
 
 module.exports = function(dirname, webpack) {
   var config = {
-    sourcedir: dirname
+    sourcedir: dirname,
+    cache: true
   };
 
   /**
@@ -36,11 +40,8 @@ module.exports = function(dirname, webpack) {
   var target = config.target = BUILD_TARGET;
 
   // Autoload all of the modules
-  config.entry = DEVELOPMENT ? {
-    app: dirname + '/index.js'
-  } : {
-    main: dirname + '/index.js'
-  };
+  config.entry = {};
+  config.entry[MAIN_ENTRY] = dirname + '/index.js';
 
   if (target === 'node') {
     config.entry = {
@@ -49,10 +50,10 @@ module.exports = function(dirname, webpack) {
   }
 
   config.output = {
-    path: dirname,
+    path: Path.dirname(dirname) + '/build',
     filename: (DEVELOPMENT || !HASH) ?
-      '[name].js' :
-      '[name]' + (DISABLE_MIN ? '' : '.min') + '.js?[chunkhash]',
+      OUTPUT_PATTERN + '.js' :
+      OUTPUT_PATTERN + (DISABLE_MIN ? '' : '.min') + '.js?[chunkhash]',
     libraryTarget: 'this'
   };
 
@@ -87,7 +88,7 @@ module.exports = function(dirname, webpack) {
     ], ['normal'])
   ];
 
-  var extractPlugin = new ExtractTextPlugin('style', '[name]' + (DISABLE_MIN ? '' : '.min') + '.css?[chunkhash]');
+  var extractPlugin = new ExtractTextPlugin('style', OUTPUT_PATTERN + (DISABLE_MIN ? '' : '.min') + '.css?[chunkhash]');
 
   if (EXTRACT_STYLE) {
     config.plugins.push(extractPlugin);
