@@ -82,7 +82,7 @@ module.exports = function(dirname, webpack) {
     new EnvifyPlugin(null, webpack),
     new webpack.DefinePlugin({
       'browser.env': '__env__',
-      'process.WEB': 'true'
+      'process.BUILD_TARGET': JSON.stringify(target)
     }),
     new webpack.ResolverPlugin([
       new ResolveSelf()
