@@ -81,7 +81,8 @@ module.exports = function(dirname, webpack) {
     new webpack.IgnorePlugin(/vertx/),
     new EnvifyPlugin(null, webpack),
     new webpack.DefinePlugin({
-      'browser.env': '__env__'
+      'browser.env': '__env__',
+      'process.WEB': 'true'
     }),
     new webpack.ResolverPlugin([
       new ResolveSelf()
