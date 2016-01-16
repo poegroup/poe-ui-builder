@@ -11,6 +11,7 @@ var Path = require('path');
 var glob = require('glob');
 var byExtension = require('./lib/loaders-by-extension');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var OptimizeCssPlugin = require('optimize-css-assets-webpack-plugin');
 var ResolveSelf = require('./lib/resolve-self');
 // remove this once webpack releases it
 // WatchIgnorePlugin = webpack.WatchIgnorePlugin
@@ -26,6 +27,7 @@ var BUILD_TARGET = envs('BUILD_TARGET', 'web');
 var EXTRACT_STYLE = !DEVELOPMENT && envs('EXTRACT_STYLE', BUILD_TARGET === 'node') !== '0';
 var OUTPUT_PATTERN = envs('OUTPUT_PATTERN', '[name]');
 var MAIN_ENTRY = DEVELOPMENT ? 'app' : envs('MAIN_ENTRY', 'main');
+var COMPILE_ENV = envs('COMPILE_ENV', '1') !== '0';
 
 module.exports = function(dirname, webpack) {
   var config = {
@@ -79,7 +81,7 @@ module.exports = function(dirname, webpack) {
 
   config.plugins = [
     new webpack.IgnorePlugin(/vertx/),
-    new EnvifyPlugin(null, webpack),
+    envify(webpack),
     new webpack.DefinePlugin({
       'browser.env': '__env__',
       'process.BUILD_TARGET': JSON.stringify(target)
@@ -93,6 +95,9 @@ module.exports = function(dirname, webpack) {
 
   if (EXTRACT_STYLE) {
     config.plugins.push(extractPlugin);
+    config.plugins.push(new OptimizeCssPlugin({
+      canPrint: false
+    }));
   }
 
   if (!DEVELOPMENT) {
@@ -179,6 +184,13 @@ module.exports = function(dirname, webpack) {
 
   return config;
 };
+
+function envify(webpack) {
+  var env = COMPILE_ENV ? null : function(name) {
+    return '___POE_UI_BUILDER_ENV_BEGIN___' + name + '___POE_UI_BUILDER_ENV_END___';
+  };
+  return new EnvifyPlugin(env, webpack);
+}
 
 function createManifest(manifest) {
   return function() {
