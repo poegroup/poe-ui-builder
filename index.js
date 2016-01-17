@@ -111,7 +111,11 @@ module.exports = function(dirname, webpack) {
 
     if (!envs('DISABLE_MIN')) config.plugins.push(
       new webpack.optimize.OccurrenceOrderPlugin(),
-      new webpack.optimize.UglifyJsPlugin({output: {comments: false}, sourceMap: false})
+      new webpack.optimize.UglifyJsPlugin({
+        output: {comments: false},
+        sourceMap: false,
+        exclude: [/\.ess/]
+      })
     );
 
     if (MANIFEST) config.plugins.push(createManifest(MANIFEST));
