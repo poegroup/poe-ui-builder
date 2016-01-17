@@ -97,9 +97,6 @@ module.exports = function(dirname, webpack) {
 
   if (EXTRACT_STYLE) {
     config.plugins.push(extractPlugin);
-    config.plugins.push(new OptimizeCssPlugin({
-      canPrint: false
-    }));
   }
 
   if (!DEVELOPMENT) {
@@ -115,6 +112,9 @@ module.exports = function(dirname, webpack) {
         output: {comments: false},
         sourceMap: false,
         exclude: [/\.ess/]
+      }),
+      new OptimizeCssPlugin({
+        assetNameRegExp: /\.css/
       })
     );
 
