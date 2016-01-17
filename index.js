@@ -115,7 +115,11 @@ module.exports = function(dirname, webpack) {
         exclude: [/\.ess/]
       }),
       new OptimizeCssPlugin({
-        assetNameRegExp: /\.css/
+        assetNameRegExp: /\.css/,
+        cssProcessorOptions: {
+          autoprefixer: {add: true},
+          discardComments: {removeAll: true}
+        }
       })
     );
 
