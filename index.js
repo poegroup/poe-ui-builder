@@ -83,7 +83,6 @@ module.exports = function(dirname, webpack) {
 
   config.plugins = [
     new webpack.IgnorePlugin(/vertx/),
-    envify(webpack),
     new webpack.DefinePlugin({
       'browser.env': '__env__',
       'process.BUILD_TARGET': JSON.stringify(target)
@@ -92,6 +91,8 @@ module.exports = function(dirname, webpack) {
       new ResolveSelf()
     ], ['normal'])
   ];
+
+  if (COMPILE_ENV) config.plugins.push(new EnvifyPlugin(null, webpack));
 
   var extractPlugin = new ExtractTextPlugin('style', OUTPUT_PATTERN + (DISABLE_MIN ? '' : '.min') + '.css?[chunkhash]');
 
@@ -193,13 +194,6 @@ module.exports = function(dirname, webpack) {
 
   return config;
 };
-
-function envify(webpack) {
-  var env = COMPILE_ENV ? null : function(name) {
-    return '___POE_UI_BUILDER_ENV_BEGIN___' + name + '___POE_UI_BUILDER_ENV_END___';
-  };
-  return new EnvifyPlugin(env, webpack);
-}
 
 function createManifest(manifest) {
   return function() {
