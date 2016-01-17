@@ -71,7 +71,7 @@ module.exports = function(dirname, webpack) {
 
       var entries = [config.entry.app];
       // append the hot reload entries
-      entries.push('webpack-dev-server/client?http://localhost:' + envs('PORT', '3000'));
+      entries.push('webpack-dev-server/client?' + envs('WEBPACK_DEV_SERVER_URL', 'http://localhost:' + envs('PORT', '3000')));
       entries.push('webpack/hot/dev-server');
       config.entry = entries;
     }
