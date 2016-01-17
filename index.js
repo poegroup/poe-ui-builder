@@ -11,6 +11,8 @@ var Path = require('path');
 var glob = require('glob');
 var byExtension = require('./lib/loaders-by-extension');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+// polyfill Promises
+require('es6-promise').polyfill();
 var OptimizeCssPlugin = require('optimize-css-assets-webpack-plugin');
 var ResolveSelf = require('./lib/resolve-self');
 // remove this once webpack releases it
