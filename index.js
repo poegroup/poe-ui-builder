@@ -138,7 +138,8 @@ module.exports = function(dirname, webpack) {
     modulesDirectories: ['web_modules', 'node_modules', 'src/modules'],
     fallback: [process.cwd(), process.cwd() + '/node_modules'],
     alias: {
-      fs: __dirname + '/lib/fs.shim.js'
+      fs: __dirname + '/lib/fs.shim.js',
+      '~': process.cwd()
     }
   };
 
