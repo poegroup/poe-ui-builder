@@ -135,7 +135,7 @@ module.exports = function(dirname, webpack) {
 
   config.resolve = {
     extensions: ['', '.js'],
-    modulesDirectories: ['web_modules', 'node_modules', 'src/modules'],
+    modulesDirectories: ['web_modules', 'node_modules', 'src/modules', process.cwd()],
     fallback: [process.cwd(), process.cwd() + '/node_modules'],
     alias: {
       fs: __dirname + '/lib/fs.shim.js',
