@@ -57,8 +57,7 @@ module.exports = function(dirname, webpack) {
     path: Path.dirname(dirname) + '/build',
     filename: (DEVELOPMENT || !HASH) ?
       OUTPUT_PATTERN + '.js' :
-      OUTPUT_PATTERN + (DISABLE_MIN ? '' : '.min') + '.js?[chunkhash]',
-    libraryTarget: 'this'
+      OUTPUT_PATTERN + (DISABLE_MIN ? '' : '.min') + '.js?[chunkhash]'
   };
 
   if (DEVELOPMENT) {
